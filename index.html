@@ -10,15 +10,15 @@
 <style>
   /* ===== Settings ===== */
   :root {
-    --banner-h: 5vh;   /* height of the Department of Justice banner */
+    --banner-h: 7vh;   /* height of the Department of Justice banner */
     --bar: 50px;       /* height of Google's warning strip to crop off (override with ?bar=NN) */
   }
 
   html, body { margin:0; height:100%; overflow:hidden; background:#0d1117; cursor:none; }
-  body { display:flex; flex-direction:column; }
 
+  /* Banner and calendar are pinned to fixed spots on the screen; scrolling can't move them */
   #doj {
-    flex-shrink:0; height:var(--banner-h); position:relative; z-index:2;
+    position:fixed; top:0; left:0; right:0; height:var(--banner-h); z-index:2;
     display:flex; align-items:center; justify-content:center; gap:2vw;
     background:linear-gradient(180deg, #0f2140 0%, #0a1830 55%, #07122a 100%);
     border-bottom:2px solid #b8902f;
@@ -42,7 +42,7 @@
     filter:drop-shadow(0 1px 1px rgba(0,0,0,.7));
   }
 
-  #frameWrap { flex:1; position:relative; overflow:hidden; }
+  #frameWrap { position:fixed; top:var(--banner-h); left:0; right:0; bottom:0; overflow:hidden; z-index:1; }
   #frameWrap iframe {
     position:absolute; left:0; width:100%; border:0;
     top:calc(-1 * var(--bar));               /* slide Google's strip up out of view */
@@ -67,7 +67,7 @@
 
 <script>
   /* ===== Paste your Apps Script web app URL (ends in /exec) here ===== */
-  const APP_URL = 'https://script.google.com/macros/s/AKfycbxknQR1QcGTGlChY_F8kUZAASBQnSqm9rPK5hpWrAoAokYRnsUdwTbs3K2UCqGgiZE4qw/exec';
+  const APP_URL = 'PASTE_YOUR_EXEC_URL_HERE';
 
   /* Reload the calendar every few hours so code redeploys show up without touching the display */
   const RELOAD_HOURS = 6;
@@ -87,6 +87,18 @@
     frame.src = src;
     setInterval(() => { frame.src = src; }, RELOAD_HOURS * 3600 * 1000);
   }
+
+  /* If anything tries to scroll the page (e.g. the calendar loading), snap it straight back */
+  const unscroll = () => {
+    if (window.scrollX || window.scrollY) window.scrollTo(0, 0);
+    if (document.documentElement.scrollTop) document.documentElement.scrollTop = 0;
+    if (document.body.scrollTop) document.body.scrollTop = 0;
+    const wrap = document.getElementById('frameWrap');
+    if (wrap.scrollTop) wrap.scrollTop = 0;
+  };
+  window.addEventListener('scroll', unscroll, true);
+  frame.addEventListener('load', () => { unscroll(); setTimeout(unscroll, 500); setTimeout(unscroll, 2000); });
+  setInterval(unscroll, 1000);
 </script>
 </body>
 </html>
