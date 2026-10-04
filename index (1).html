@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Department of Justice — Court Calendar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  /* ===== Settings ===== */
+  :root {
+    --banner-h: 7vh;   /* height of the Department of Justice banner */
+    --bar: 50px;       /* height of Google's warning strip to crop off (override with ?bar=NN) */
+  }
+
+  html, body { margin:0; height:100%; overflow:hidden; background:#0d1117; cursor:none; }
+  body { display:flex; flex-direction:column; }
+
+  #doj {
+    flex-shrink:0; height:var(--banner-h); position:relative; z-index:2;
+    display:flex; align-items:center; justify-content:center; gap:2vw;
+    background:linear-gradient(180deg, #0f2140 0%, #0a1830 55%, #07122a 100%);
+    border-bottom:2px solid #b8902f;
+    box-shadow:0 2px 10px rgba(0,0,0,.5);
+  }
+  #doj::after { /* thin inner gold line */
+    content:""; position:absolute; left:0; right:0; bottom:3px; height:1px;
+    background:linear-gradient(90deg, transparent, rgba(232,194,90,.6), transparent);
+  }
+  .rule {
+    width:12vw; height:2px;
+    background:linear-gradient(90deg, transparent, #e8c25a);
+  }
+  .rule.r { background:linear-gradient(90deg, #e8c25a, transparent); }
+  #doj h1 {
+    margin:0; white-space:nowrap;
+    font-family:'Cinzel', Georgia, 'Times New Roman', serif; font-weight:700;
+    font-size:calc(var(--banner-h) * .48); letter-spacing:.16em; text-transform:uppercase;
+    background:linear-gradient(180deg, #fff3c4 0%, #f0cf6a 35%, #b8862b 55%, #e9c45f 75%, #fbe7a1 100%);
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+    filter:drop-shadow(0 1px 1px rgba(0,0,0,.7));
+  }
+
+  #frameWrap { flex:1; position:relative; overflow:hidden; }
+  #frameWrap iframe {
+    position:absolute; left:0; width:100%; border:0;
+    top:calc(-1 * var(--bar));               /* slide Google's strip up out of view */
+    height:calc(100% + var(--bar));
+  }
+  #msg {
+    position:absolute; inset:0; display:none; align-items:center; justify-content:center;
+    color:#e8c25a; font:600 2vw Georgia, serif; text-align:center; padding:4vw;
+  }
+</style>
+</head>
+<body>
+  <div id="doj">
+    <div class="rule"></div>
+    <h1>Department of Justice</h1>
+    <div class="rule r"></div>
+  </div>
+  <div id="frameWrap">
+    <iframe id="app" title="Court Calendar"></iframe>
+    <div id="msg"></div>
+  </div>
+
+<script>
+  /* ===== Paste your Apps Script web app URL (ends in /exec) here ===== */
+  const APP_URL = 'PASTE_YOUR_EXEC_URL_HERE';
+
+  /* Reload the calendar every few hours so code redeploys show up without touching the display */
+  const RELOAD_HOURS = 6;
+
+  const params = new URLSearchParams(location.search);
+  const src = params.get('src') || APP_URL;
+  if (params.has('bar')) {
+    document.documentElement.style.setProperty('--bar', (parseInt(params.get('bar'), 10) || 0) + 'px');
+  }
+
+  const frame = document.getElementById('app');
+  if (!/^https:\/\/script\.google\.com\//.test(src)) {
+    const msg = document.getElementById('msg');
+    msg.textContent = 'Set APP_URL in index.html to your Apps Script /exec link.';
+    msg.style.display = 'flex';
+  } else {
+    frame.src = src;
+    setInterval(() => { frame.src = src; }, RELOAD_HOURS * 3600 * 1000);
+  }
+</script>
+</body>
+</html>
