@@ -11,7 +11,7 @@
   /* ===== Settings ===== */
   :root {
     --banner-h: 7vh;   /* height of the Department of Justice banner */
-    --bar: 50px;       /* height of Google's warning strip to crop off (override with ?bar=NN) */
+    --bar: 0px;        /* crop off the top of the calendar; normally 0 (Google's strip doesn't appear inside an iframe) */
   }
 
   html, body { margin:0; height:100%; overflow:hidden; background:#0d1117; cursor:none; }
@@ -67,7 +67,7 @@
 
 <script>
   /* ===== Paste your Apps Script web app URL (ends in /exec) here ===== */
-  const APP_URL = 'PASTE_YOUR_EXEC_URL_HERE';
+  const APP_URL = 'https://script.google.com/macros/s/AKfycbxknQR1QcGTGlChY_F8kUZAASBQnSqm9rPK5hpWrAoAokYRnsUdwTbs3K2UCqGgiZE4qw/exec';
 
   /* Reload the calendar every few hours so code redeploys show up without touching the display */
   const RELOAD_HOURS = 6;
